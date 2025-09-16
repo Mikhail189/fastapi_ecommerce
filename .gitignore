@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Virtual env
+venv/
+.env
+
+# IDE
+.idea/
+.vscode/
+
+# Docker
+*.log
+*.pid
+*.seed
+*.bak
+*.swp
+*.swo
+
+# Databases
+*.sqlite3
+*.db
+/data/
+postgres_data/
+redis_data/
+mongo_data/

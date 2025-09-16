@@ -1,0 +1,16 @@
+services:
+  db_test:
+    image: postgres:15
+    container_name: fastapi-ecommerce-test-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: postgres_test_database
+    ports:
+      - "5433:5432"  # тестовая БД будет доступна на 5433 локально
+    volumes:
+      - db_test_data:/var/lib/postgresql/data
+
+volumes:
+  db_test_data:

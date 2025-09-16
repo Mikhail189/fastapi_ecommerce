@@ -1,0 +1,81 @@
+networks:
+  ecommerce_net:
+    name: fastapi_ecommerce_default   # фиксированное имя сети
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile.prod
+    command: >
+      gunicorn app.main:app
+      --workers 4
+      --worker-class uvicorn.workers.UvicornWorker
+      --bind 0.0.0.0:8000
+      --log-level debug
+      --capture-output
+      --access-logfile -
+      --error-logfile -
+    depends_on:
+      - db
+      - redis
+      - mongo
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres_user:postgres_password@db:5432/postgres_database
+      - TEST_DATABASE_URL=postgresql+asyncpg://postgres_user:postgres_password@db:5432/postgres_test_database
+      - REDIS_URL=redis://:password_redis_1488@redis:6379
+      - MONGO_URL=mongodb://admin_1488:secret_1488@mongo:27017/?authSource=admin
+    ports:
+      - "8000:8000"
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=postgres_password
+      - POSTGRES_DB=postgres_database
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "--requirepass", "password_redis_1488"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin_1488
+      - MONGO_INITDB_ROOT_PASSWORD=secret_1488
+    volumes:
+      - mongo_data:/data/db
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile.prod
+    command: celery -A app.celery_app.celery_app worker --loglevel=info
+    depends_on:
+      - redis
+      - mongo
+      - db
+    restart: always
+
+  nginx:
+    build: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
