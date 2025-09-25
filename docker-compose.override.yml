@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile   # <-- локальный Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/home/fast/app   # монтируем код с хоста внутрь контейнера
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres_user:postgres_password@db:5432/postgres_database
+      - TEST_DATABASE_URL=postgresql+asyncpg://postgres_user:postgres_password@db_test:5432/postgres_test_database
+      - REDIS_URL=redis://:password_redis_1488@redis:6379
+      - MONGO_URL=mongodb://admin_1488:secret_1488@mongo:27017/?authSource=admin

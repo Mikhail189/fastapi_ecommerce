@@ -27,7 +27,7 @@ async def get_all_categories(db: Annotated[AsyncSession, Depends(get_db)],
     # 1. Проверяем кэш
     user_id = get_user["id"]
     key = f"rate_limit:user:{user_id}"
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+    #print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
     # 2. Увеличиваем счётчик
     current = await REDIS_CLIENT.incr(key)
     if current == 1:
